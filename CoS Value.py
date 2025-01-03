@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import random
 import os
+import threading
 
 # File for storing searched creatures
 SEARCHED_CREATURES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "searched_creatures.txt")
@@ -76,27 +77,36 @@ def display_results():
         messagebox.showwarning("Input Error", "Please enter a valid creature name.")
         return
 
-    value, demand, stability = fetch_creature_details(creature_name)
+    # Show the loading screen while data is being fetched
+    loading_label, progress_bar = show_loading_screen()
 
-    # Check if valid data was retrieved
-    if value == "Error fetching data" or demand == "N/A" or stability == "N/A":
-        messagebox.showwarning("Invalid Creature", "Could not fetch data for this creature. Please check the name and try again.")
-        return
+    # Run the data fetching in a separate thread to keep the GUI responsive
+    def fetch_and_display():
+        value, demand, stability = fetch_creature_details(creature_name)
 
-    save_searched_creature(creature_name)
+        # Hide the loading screen after data is fetched
+        hide_loading_screen(loading_label, progress_bar)
 
-    value_text.set(f"{value} Mush")
-    demand_text.set(f"{demand} Players")
-    stability_text.set(stability)
+        # Check if valid data was retrieved
+        if value == "Error fetching data" or demand == "N/A" or stability == "N/A":
+            messagebox.showwarning("Invalid Creature", "Could not fetch data for this creature. Please check the name and try again.")
+            return
 
-    tips = generate_trading_tips(demand, stability)
+        save_searched_creature(creature_name)
 
-    # Update trading tips text in the Text widget
-    tips_entry.config(state=tk.NORMAL)  # Enable the widget to modify text
-    tips_entry.delete(1.0, tk.END)  # Clear any existing text
-    tips_entry.insert(tk.END, "\n".join(tips))  # Insert the new tips
-    tips_entry.config(state=tk.DISABLED)  # Disable the widget again
+        value_text.set(f"{value} Mush")
+        demand_text.set(f"{demand} Players")
+        stability_text.set(stability)
 
+        tips = generate_trading_tips(demand, stability)
+
+        # Update trading tips text in the Text widget
+        tips_entry.config(state=tk.NORMAL)  # Enable the widget to modify text
+        tips_entry.delete(1.0, tk.END)  # Clear any existing text
+        tips_entry.insert(tk.END, "\n".join(tips))  # Insert the new tips
+        tips_entry.config(state=tk.DISABLED)  # Disable the widget again
+
+    threading.Thread(target=fetch_and_display, daemon=True).start()
 
 # Function to generate trading tips
 def generate_trading_tips(demand, stability):
@@ -132,6 +142,23 @@ def generate_trading_tips(demand, stability):
         tips.append("The market is extremely unstable! Be prepared for rapid price changes, trade carefully.")
 
     return tips if tips else ["No trading tips available."]
+
+# Create the loading label and progress bar
+def show_loading_screen():
+    loading_label = tk.Label(root, text="Fetching data, please wait...", font=("Arial", 14), fg="white", bg="black")
+    loading_label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)  # Use place for centering the loading text
+
+    # Create a progress bar
+    progress_bar = ttk.Progressbar(root, length=200, mode='indeterminate')
+    progress_bar.place(relx=0.5, rely=0.35, anchor=tk.CENTER)  # Place it just below the loading label
+    progress_bar.start()
+
+    return loading_label, progress_bar
+
+# Function to hide the loading screen
+def hide_loading_screen(loading_label, progress_bar):
+    loading_label.destroy()
+    progress_bar.destroy()
 
 # Create the GUI application
 root = tk.Tk()
