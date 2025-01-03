@@ -105,10 +105,8 @@ cd creature-value-fetcher
 
 5. Submit a pull request.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
 **Enjoy fetching creature values with style! 🎉**
+Made by Emily / Roblox Name: @yieslie / yeslie
