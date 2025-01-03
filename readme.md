@@ -12,6 +12,7 @@ Additionally, the application features an animated "mouse-to-lines connect" styl
   - Price Stability (e.g., `STABLE`).
 - **Animated Background**: Displays moving particles that connect dynamically to create a visually pleasing animation.
 - **Intuitive Interface**: Simple input and output sections for quick access to creature data.
+- **Trading Tips**: Provides tips based on the combined demand and stability to help users make trading decisions.
 
 ## Installation
 
