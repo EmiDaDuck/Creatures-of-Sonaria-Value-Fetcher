@@ -109,4 +109,5 @@ cd creature-value-fetcher
 ---
 
 **Enjoy fetching creature values with style! 🎉**
-Made by Emily / Roblox Name: @yieslie / yeslie
+Donation are not necessary but appreciated / taking ingame items such as mush, creatures and stuff.
+Made by Emily / Roblox Name: @yieslie / yeslie with ❤️
