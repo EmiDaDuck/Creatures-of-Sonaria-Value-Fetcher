@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import random
 import os
 import threading
+import webbrowser
 
 # File for storing searched creatures
 SEARCHED_CREATURES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "searched_creatures.txt")
@@ -167,6 +168,10 @@ def hide_loading_screen(loading_label, progress_bar):
     loading_label.destroy()
     progress_bar.destroy()
 
+# Function to open the donation link
+def open_donation_link():
+    webbrowser.open("https://www.roblox.com/games/98354037145737/Donations-Place-Creature-of-Sonaria-Fetcher")
+
 # Create the GUI application
 root = tk.Tk()
 root.title("Creature Value Fetcher")
@@ -236,6 +241,10 @@ tips_entry.config(state=tk.DISABLED)
 # Last update label
 last_update_label = tk.Label(results_frame, text="Last Update: N/A", font=("Arial", 14), fg="white", bg="black")
 last_update_label.grid(row=4, column=1, pady=5, sticky="w")
+
+# Donation Button
+donation_button = tk.Button(root, text="Support the Project! ❤️", font=("Arial", 14), bg="#FFD700", fg="black", command=open_donation_link)
+donation_button.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
 
 # Load autocomplete suggestions on start
 update_autocomplete_suggestions()
