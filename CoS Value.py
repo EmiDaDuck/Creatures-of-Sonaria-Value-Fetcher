@@ -30,9 +30,13 @@ def fetch_creature_details(creature_name):
         stability_element = soup.find('p', class_='elementor-heading-title', string=lambda t: "Stability:" in t)
         stability = stability_element.text.split(":")[-1].strip() if stability_element else "N/A"
 
-        return value, demand, stability
+        # Extract last update time
+        last_update_element = soup.find('span', class_='posted-on')
+        last_update_time = last_update_element.find('time').text.strip() if last_update_element else "N/A"
+
+        return value, demand, stability, last_update_time
     except requests.exceptions.RequestException as e:
-        return "Error fetching data", "N/A", "N/A"
+        return "Error fetching data", "N/A", "N/A", "N/A"
 
 # Function to save searched creatures
 def save_searched_creature(creature_name):
@@ -82,7 +86,7 @@ def display_results():
 
     # Run the data fetching in a separate thread to keep the GUI responsive
     def fetch_and_display():
-        value, demand, stability = fetch_creature_details(creature_name)
+        value, demand, stability, last_update_time = fetch_creature_details(creature_name)
 
         # Hide the loading screen after data is fetched
         hide_loading_screen(loading_label, progress_bar)
@@ -105,6 +109,9 @@ def display_results():
         tips_entry.delete(1.0, tk.END)  # Clear any existing text
         tips_entry.insert(tk.END, "\n".join(tips))  # Insert the new tips
         tips_entry.config(state=tk.DISABLED)  # Disable the widget again
+
+        # Update the last update time on the UI
+        last_update_label.config(text=f"Last Update: {last_update_time}")
 
     threading.Thread(target=fetch_and_display, daemon=True).start()
 
@@ -225,6 +232,10 @@ tips_label.grid(row=3, column=0, pady=5, sticky="e")
 tips_entry = tk.Text(results_frame, height=5, width=50, font=("Arial", 14), wrap=tk.WORD, bg="black", fg="white", bd=0)
 tips_entry.grid(row=3, column=1, pady=5, sticky="w")
 tips_entry.config(state=tk.DISABLED)
+
+# Last update label
+last_update_label = tk.Label(results_frame, text="Last Update: N/A", font=("Arial", 14), fg="white", bg="black")
+last_update_label.grid(row=4, column=1, pady=5, sticky="w")
 
 # Load autocomplete suggestions on start
 update_autocomplete_suggestions()
